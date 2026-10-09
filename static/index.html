@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>СтатПоиск / 2x2StatSearch — exact tests for 2×2 tables</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>СтатПоиск · 2x2StatSearch</h1>
+      <p class="subtitle">Точные критерии / Exact tests for 2×2 · Fisher · Barnard · Boschloo · mid-p · χ² · Yates · McNemar · OR</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Таблица сопряжённости · Contingency table</h2>
+        <div class="table-input">
+          <div class="ti-corner"></div>
+          <div class="ti-h">Признак + · Factor +</div>
+          <div class="ti-h">Признак − · Factor −</div>
+          <div class="ti-h">Итого · Total</div>
+
+          <div class="ti-label">Группа 1 · Group 1</div>
+          <input type="number" id="a" min="0" step="1" value="7" />
+          <input type="number" id="b" min="0" step="1" value="12" />
+          <div class="ti-sum" id="sum-r1">19</div>
+
+          <div class="ti-label">Группа 2 · Group 2</div>
+          <input type="number" id="c" min="0" step="1" value="8" />
+          <input type="number" id="d" min="0" step="1" value="3" />
+          <div class="ti-sum" id="sum-r2">11</div>
+
+          <div class="ti-label">Итого · Total</div>
+          <div class="ti-sum" id="sum-c1">15</div>
+          <div class="ti-sum" id="sum-c2">15</div>
+          <div class="ti-sum ti-n" id="sum-n">30</div>
+        </div>
+
+        <div class="params">
+          <div class="param-block">
+            <h3>Альтернатива · Alternative</h3>
+            <label class="radio"><input type="radio" name="alt" value="two-sided" checked /> Двусторонняя / Two-sided: OR ≠ 1</label>
+            <label class="radio"><input type="radio" name="alt" value="less" /> Односторонняя / One-sided: OR &lt; 1</label>
+            <label class="radio"><input type="radio" name="alt" value="greater" /> Односторонняя / One-sided: OR &gt; 1</label>
+          </div>
+          <div class="param-block">
+            <h3>Ориентация (Barnard) · Orientation</h3>
+            <label class="radio"><input type="radio" name="grp" value="auto" checked /> Авто · Auto</label>
+            <label class="radio"><input type="radio" name="grp" value="rows" /> Строки · Rows (n₁=a+b)</label>
+            <label class="radio"><input type="radio" name="grp" value="columns" /> Столбцы · Columns (scipy/R/SAS)</label>
+          </div>
+          <div class="param-block param-full">
+            <h3>Дизайн данных · Study design (McNemar)</h3>
+            <label class="radio"><input type="radio" name="design" value="independent" checked /> Независимые группы · Independent samples</label>
+            <label class="radio"><input type="radio" name="design" value="paired" /> Парные / зависимые · Paired / matched</label>
+            <label class="radio"><input type="radio" name="design" value="unknown" /> Не уверен(а) · Not sure</label>
+          </div>
+        </div>
+
+        <button id="btn-calc" class="btn-primary" type="button">Рассчитать · Calculate</button>
+        <p id="status" class="status" hidden></p>
+      </section>
+
+      <section class="card results" id="results" hidden>
+        <h2>Результаты · Results</h2>
+        <div class="recommend" id="recommend" hidden></div>
+
+        <div class="paywall" id="paywall" hidden>
+          <div class="pay-title">Полный отчёт · Full report — <span id="pay-price">5 TON</span></div>
+          <p class="pay-desc">Рекомендация критерия бесплатна. Числа p-value, OR, CSV — после оплаты.<br/>
+          Test recommendation is free. p-values, OR, CSV unlock after payment.</p>
+          <div class="pay-box">
+            <div class="pay-row"><span>Сумма · Amount</span><strong id="pay-amount">5 TON</strong></div>
+            <div class="pay-row"><span>Сеть · Network</span><strong>TON (The Open Network)</strong></div>
+            <div class="pay-row"><span>Комментарий · Memo</span><code id="pay-memo">StatPoisk</code></div>
+            <div class="pay-addr-label">Адрес кошелька · Wallet address</div>
+            <div class="pay-addr" id="pay-address">—</div>
+            <div class="pay-actions">
+              <button type="button" class="btn-secondary" id="btn-copy-addr">Копировать · Copy address</button>
+              <a class="btn-primary" id="btn-ton-link" href="#" target="_blank" rel="noopener">Открыть в Tonkeeper · Open Tonkeeper</a>
+            </div>
+          </div>
+          <p class="pay-hint">После перевода нажмите кнопку ниже. / After transfer, press the button below.</p>
+          <button type="button" class="btn-primary" id="btn-unlock">Я оплатил(а) · I have paid — show results</button>
+        </div>
+
+        <div id="paid-content">
+          <div class="metrics" id="metrics"></div>
+
+          <details open>
+            <summary>Отношение шансов · Odds ratio (OR)</summary>
+            <div id="block-or" class="block"></div>
+          </details>
+          <details open>
+            <summary>Точные критерии · Exact tests</summary>
+            <div id="block-exact" class="block"></div>
+          </details>
+          <details>
+            <summary>χ² Пирсона и Йейтс · Pearson χ² &amp; Yates</summary>
+            <div id="block-chi2" class="block"></div>
+          </details>
+          <details>
+            <summary>Макнемар · McNemar (paired data)</summary>
+            <div id="block-mcnemar" class="block"></div>
+          </details>
+
+          <div class="export-row">
+            <button id="btn-csv" class="btn-secondary" type="button">Скачать CSV · Download CSV</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        СтатПоиск / 2x2StatSearch · SciPy (<code>fisher_exact</code>, <code>barnard_exact</code>,
+        <code>boschloo_exact</code>, <code>chi2_contingency</code>) &amp; R.
+        Не замена консультации статистика. · Not a substitute for a statistician.
+      </p>
+    </footer>
+  </div>
+  <script src="/payment_config.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
