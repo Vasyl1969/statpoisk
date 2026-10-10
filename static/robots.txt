@@ -1,5 +1,2 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
-
-
-Sitemap: https://statpoisk.onrender.com/sitemap.xml
